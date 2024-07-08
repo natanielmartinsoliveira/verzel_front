@@ -1,0 +1,31 @@
+version: '3.0'
+
+services: 
+    web-server:
+      image: nginx:1.21.1
+      container_name: webdev-react
+      ports:
+        - "8082:80"
+        - "446:443"
+      networks:
+        - web-dev
+      volumes:
+        - ./confs/servers/:/etc/nginx/conf.d/
+        - ./projects:/var/www/projects
+        - ./confs/ssl/:/var/www/ssl
+    
+    react:
+      container_name: ngixreactapp
+      build:
+        context: .
+        dockerfile: react.dockerfile
+      ports:
+        - 80:80
+      environment:
+        NODE_ENV: production
+      networks:
+        - web-dev
+
+networks: 
+      web-dev:
+        driver: bridge
