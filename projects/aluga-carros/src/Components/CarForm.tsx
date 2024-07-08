@@ -18,6 +18,7 @@ function CarForm({ fetchCars }: CarFormProps) {
   const [ano, setAno] = useState<string>('');
   const [preco, setPreco] = useState<string>('');
   const [quilometragem, setQuilometragem] = useState<string>('');
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const { user } = useAuth();
   const history = useNavigate();
 
@@ -51,27 +52,56 @@ function CarForm({ fetchCars }: CarFormProps) {
     }
   }, [marca]);
 
+  const validateForm = () => {
+    const newErrors: { [key: string]: string } = {};
+
+    if (!marca) {
+      newErrors.marca = 'A marca é obrigatória';
+    }
+    if (!modelo) {
+      newErrors.modelo = 'O modelo é obrigatório';
+    }
+    if (!ano) {
+      newErrors.ano = 'O ano é obrigatório';
+    }
+    if (!preco) {
+      newErrors.preco = 'O preço é obrigatório';
+    } else if (parseFloat(preco) <= 0) {
+      newErrors.preco = 'O preço deve ser um valor positivo';
+    }
+    if (!quilometragem) {
+      newErrors.quilometragem = 'A quilometragem é obrigatória';
+    } else if (parseInt(quilometragem) < 0) {
+      newErrors.quilometragem = 'A quilometragem não pode ser negativa';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const data = {
-      marca_id: parseInt(marca),
-      modelo_id: parseInt(modelo),
-      ano: parseInt(ano),
-      preco: parseFloat(preco),
-      quilometragem: parseInt(quilometragem),
-      user_id: user!.id
-    };
+    if (validateForm()) {
+      const data = {
+        marca_id: parseInt(marca),
+        modelo_id: parseInt(modelo),
+        ano: parseInt(ano),
+        preco: parseFloat(preco),
+        quilometragem: parseInt(quilometragem),
+        user_id: user!.id
+      };
 
-    try {
-      if (id) {
-        await axios.put(`/carros/${id}`, data);
-      } else {
-        await axios.post(`/carros`, data);
+      try {
+        if (id) {
+          await axios.put(`/carros/${id}`, data);
+        } else {
+          await axios.post(`/carros`, data);
+        }
+        fetchCars();
+        history('/');
+      } catch (error) {
+        console.error('Error submitting form:', error);
       }
-      fetchCars();
-      history('/');
-    } catch (error) {
-      console.error('Error submitting form:', error);
     }
   };
 
@@ -85,30 +115,39 @@ function CarForm({ fetchCars }: CarFormProps) {
           <Form onSubmit={handleSubmit}>
             <Form.Group controlId="formMarca">
               <Form.Label>Marca</Form.Label>
-              <Form.Control as="select" value={marca} onChange={(e) => setMarca(e.target.value)}>
+              <Form.Control as="select" value={marca} onChange={(e) => setMarca(e.target.value)} isInvalid={!!errors.marca}>
                 <option value="">Selecione a Marca</option>
                 {marcas.map(m => (
                   <option key={m.id} value={m.id.toString()}>{m.nome}</option>
                 ))}
               </Form.Control>
+              <Form.Control.Feedback type="invalid">
+                {errors.marca}
+              </Form.Control.Feedback>
             </Form.Group>
             <Form.Group controlId="formModelo">
               <Form.Label>Modelo</Form.Label>
-              <Form.Control as="select" value={modelo} onChange={(e) => setModelo(e.target.value)}>
+              <Form.Control as="select" value={modelo} onChange={(e) => setModelo(e.target.value)} isInvalid={!!errors.modelo}>
                 <option value="">Selecione o Modelo</option>
                 {modelos.map(m => (
                   <option key={m.id} value={m.id.toString()}>{m.nome}</option>
                 ))}
               </Form.Control>
+              <Form.Control.Feedback type="invalid">
+                {errors.modelo}
+              </Form.Control.Feedback>
             </Form.Group>
             <Form.Group controlId="formAno">
               <Form.Label>Ano</Form.Label>
-              <Form.Control as="select" value={ano} onChange={(e) => setAno(e.target.value)}>
-                <option value="">Todos</option>
+              <Form.Control as="select" value={ano} onChange={(e) => setAno(e.target.value)} isInvalid={!!errors.ano}>
+                <option value="">Selecione o Ano</option>
                 {anos.map((ano) => (
                     <option key={ano} value={ano}>{ano}</option>
                 ))}
               </Form.Control>
+              <Form.Control.Feedback type="invalid">
+                {errors.ano}
+              </Form.Control.Feedback>
             </Form.Group>
             <Form.Group controlId="formPreco">
               <Form.Label>Preço</Form.Label>
@@ -117,7 +156,11 @@ function CarForm({ fetchCars }: CarFormProps) {
                 value={preco}
                 onChange={(e) => setPreco(e.target.value)}
                 placeholder="Preço"
+                isInvalid={!!errors.preco}
               />
+              <Form.Control.Feedback type="invalid">
+                {errors.preco}
+              </Form.Control.Feedback>
             </Form.Group>
             <Form.Group controlId="formQuilometragem">
               <Form.Label>Quilometragem</Form.Label>
@@ -126,7 +169,11 @@ function CarForm({ fetchCars }: CarFormProps) {
                 value={quilometragem}
                 onChange={(e) => setQuilometragem(e.target.value)}
                 placeholder="Quilometragem"
+                isInvalid={!!errors.quilometragem}
               />
+              <Form.Control.Feedback type="invalid">
+                {errors.quilometragem}
+              </Form.Control.Feedback>
             </Form.Group>
             <Button variant="primary" type="submit">
               {id ? 'Atualizar' : 'Adicionar'}
