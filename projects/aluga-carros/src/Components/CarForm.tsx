@@ -3,10 +3,10 @@ import { useNavigate, useParams } from 'react-router-dom';
 import axios from '../axiosConfig';
 import { Form, Button, Container, Row, Col } from 'react-bootstrap';
 import { useAuth } from '../hooks/useAuth';
-import { Marca, Modelo } from '../types'; // Importe os tipos corretamente
+import { Marca, Modelo } from '../types'; 
 
 interface CarFormProps {
-  fetchCars: () => void; // Defina a propriedade fetchCars como função sem argumentos e sem retorno
+  fetchCars: () => void; 
 }
 
 function CarForm({ fetchCars }: CarFormProps) {
@@ -68,10 +68,7 @@ function CarForm({ fetchCars }: CarFormProps) {
       } else {
         await axios.post(`/carros`, data);
       }
-      
-      // Após a submissão do formulário, chame a função fetchCars passada como prop
       fetchCars();
-
       history('/');
     } catch (error) {
       console.error('Error submitting form:', error);

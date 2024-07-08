@@ -18,7 +18,6 @@ const CarList: React.FC<CarListProps> = ({ cars, edit, fetchCars, currentPage, t
     const { isAuthenticated, user, logout } = useAuth();
     const token = localStorage.getItem('token');
     const [pagina, setPagina] = useState<number>(1);
-   // const [totalPaginas, setTotalPaginas] = useState<number>(1);
 
     const handleDelete = async (id: number) => {
         try {
@@ -27,14 +26,13 @@ const CarList: React.FC<CarListProps> = ({ cars, edit, fetchCars, currentPage, t
                     Authorization: `Bearer ${token}`
                 }
             });
-            //fetchCars();
         } catch (error) {
             console.error('Error deleting car', error);
         }
     };
 
     const handleEdit = (id: number) => {
-        // Implementar a lógica de edição, talvez redirecionando para um formulário de edição
+        // removido para o redirect
     };
 
     const handlePageChange = (pageNumber: number) => {

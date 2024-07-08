@@ -53,7 +53,7 @@ const App: React.FC = () => {
     const handleFilterChange = (newFilters: Filters) => {
         const validFilters = removeEmptyFilters(newFilters);
         setFilters(validFilters);
-        setCurrentPage(1);  // Reset to page 1 whenever filters change
+        setCurrentPage(1); 
     };
 
     const isValidFilters = (filters: Filters): boolean => {

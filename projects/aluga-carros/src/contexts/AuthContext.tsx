@@ -1,6 +1,5 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import axios from '../axiosConfig';
-//import { User } from '../types';
 import { useNavigate } from 'react-router-dom'; 
 
 interface User {
@@ -46,7 +45,6 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
     );
 
-    // Limpa o interceptor quando o componente é desmontado
     return () => {
       axios.interceptors.response.eject(responseInterceptor);
     };

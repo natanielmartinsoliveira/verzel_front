@@ -48,7 +48,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ onFilterChange }) => {
             setModelos(response.data);
         } catch (error) {
             console.error('Error fetching models', error);
-            setModelos([]); // Limpa os modelos em caso de erro
+            setModelos([]);
         }
     };
 
